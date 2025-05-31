@@ -335,7 +335,9 @@ def wet_bulb_temperature(
         eps = 0.1
         T_wb_hi = min(T_wb + eps, T_db)
         T_wb_lo = max(T_wb - eps, -90.0)
-        dOmega_dTwb = (humidity_ratio(T_db, T_wb_hi, P) - humidity_ratio(T_db, T_wb_lo, P)) / max(T_wb_hi - T_wb_lo, EPSILON)
+        dOmega_dTwb = (
+            humidity_ratio(T_db, T_wb_hi, P) - humidity_ratio(T_db, T_wb_lo, P)
+        ) / max(T_wb_hi - T_wb_lo, EPSILON)
         T_wb -= residual / (dOmega_dTwb + EPSILON)
 
     raise RuntimeError(

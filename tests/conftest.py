@@ -10,7 +10,6 @@ from cooltower.control import FOPDTModel, PIParameters
 from cooltower.energy_balance import CoolingTowerState
 from cooltower.psychrometrics import humidity_ratio, specific_enthalpy
 
-
 # ---------------------------------------------------------------------------
 # Psychrometric fixtures
 # ---------------------------------------------------------------------------
