@@ -1,0 +1,91 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cooltower"
+version = "0.1.0"
+description = "Cooling tower thermodynamic and process control analysis library"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Defne Nihal Ertugrul", email = "d.ertugrul@imperial.ac.uk" }]
+requires-python = ">=3.10"
+keywords = [
+    "cooling tower",
+    "psychrometrics",
+    "thermodynamics",
+    "process control",
+    "chemical engineering",
+    "HVAC",
+    "lambda tuning",
+    "FOPDT",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+    "mypy>=1.8",
+]
+examples = [
+    "matplotlib>=3.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/defnalk/cooltower"
+Documentation = "https://github.com/defnalk/cooltower#readme"
+Repository = "https://github.com/defnalk/cooltower"
+"Bug Tracker" = "https://github.com/defnalk/cooltower/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: fast unit tests with no external dependencies",
+    "integration: end-to-end pipeline tests",
+]
+addopts = "--cov=cooltower --cov-report=term-missing --cov-fail-under=90"
+
+[tool.coverage.run]
+source = ["src/cooltower"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+src = ["src"]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
