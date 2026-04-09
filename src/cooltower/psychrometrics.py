@@ -105,7 +105,6 @@ def saturation_pressure(T_db: float) -> float:
     else:
         # Buck (1981) – ice surface
         p_sat = 611.15 * math.exp((23.036 - T_db / 333.7) * (T_db / (279.82 + T_db)))
-    logger.debug("saturation_pressure(T_db=%.2f °C) = %.4f Pa", T_db, p_sat)
     return p_sat
 
 
@@ -148,7 +147,6 @@ def humidity_ratio_from_rh(
             "Check that T_db and rh are consistent with the given pressure."
         )
     omega = MR_RATIO * p_v / (P - p_v)
-    logger.debug("humidity_ratio_from_rh → ω = %.6f kg/kg", omega)
     return omega
 
 
@@ -195,12 +193,6 @@ def humidity_ratio(
     p_v = p_sat_wb - A * P * (T_db - T_wb)
     p_v = max(p_v, 0.0)
     omega = MR_RATIO * p_v / max(P - p_v, 1.0)
-    logger.debug(
-        "humidity_ratio(T_db=%.2f, T_wb=%.2f) → ω = %.6f kg/kg",
-        T_db,
-        T_wb,
-        omega,
-    )
     return omega
 
 
@@ -229,7 +221,6 @@ def specific_enthalpy(T_db: float, omega: float) -> float:
         raise ValueError(f"Humidity ratio cannot be negative, got ω = {omega}.")
 
     h = CP_AIR * T_db + omega * (H_FG_0 + CP_VAPOUR * T_db)
-    logger.debug("specific_enthalpy(T=%.2f, ω=%.6f) → h = %.2f J/kg", T_db, omega, h)
     return h
 
 
@@ -288,7 +279,6 @@ def dew_point_temperature(omega: float, P: float = P_STD) -> float:
     # Magnus inversion (Lawrence 2005) – accurate to ±0.35 °C over 0–60 °C
     ln_pv = math.log(p_v / 611.21)
     T_dp = (234.5 * ln_pv) / (17.368 - ln_pv)
-    logger.debug("dew_point_temperature(ω=%.6f) → T_dp = %.2f °C", omega, T_dp)
     return T_dp
 
 
@@ -391,10 +381,4 @@ def evaporation_rate(
             raise ValueError(f"{name} must be non-negative, got {val}.")
 
     m_evap = max(0.0, (omega_out - omega_in) * m_air)
-    logger.debug(
-        "evaporation_rate(Δω=%.6f, ṁa=%.4f) → ṁ_evap = %.6f kg/s",
-        omega_out - omega_in,
-        m_air,
-        m_evap,
-    )
     return m_evap
