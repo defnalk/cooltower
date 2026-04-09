@@ -173,6 +173,12 @@ def identify_fopdt(
         tau_p = 1.5 * (t63 - t28)
         theta = t63 - tau_p - (post_step_t[0] - step_time)
     elif method == "tangent":
+        if len(post_step_t) < 2:
+            raise ValueError(
+                "tangent method requires at least 2 post-step samples to "
+                f"estimate a slope, got {len(post_step_t)}. Extend the "
+                "step test or use method='two_point'."
+            )
         # Find inflection point (max slope in post-step data)
         slopes = [
             (post_step_y[i + 1] - post_step_y[i]) / max(post_step_t[i + 1] - post_step_t[i], 1e-9)
@@ -210,10 +216,21 @@ def _interpolate_response_time(
     y0: float,
     target_delta: float,
 ) -> float:
-    """Find the time at which (y − y0) first reaches *target_delta* by linear interpolation."""
+    """Find the time at which (y − y0) first reaches *target_delta* by linear interpolation.
+
+    Works for both rising (positive step) and falling (negative step)
+    responses: the crossing is detected whenever *target_delta* lies
+    between two consecutive (y[i] − y0) samples, regardless of sign.
+    """
     for i in range(len(y) - 1):
-        if (y[i] - y0) <= target_delta <= (y[i + 1] - y0):
-            frac = (target_delta - (y[i] - y0)) / max(y[i + 1] - y[i], 1e-12)
+        d0 = y[i] - y0
+        d1 = y[i + 1] - y0
+        lo, hi = (d0, d1) if d0 <= d1 else (d1, d0)
+        if lo <= target_delta <= hi:
+            denom = d1 - d0
+            if abs(denom) < 1e-12:
+                return t[i]
+            frac = (target_delta - d0) / denom
             return t[i] + frac * (t[i + 1] - t[i])
     raise ValueError(
         f"Response does not reach the target level (Δy = {target_delta:.4f}) "
@@ -335,7 +352,15 @@ def tune_cohen_coon(model: FOPDTModel) -> PIParameters:
 
     Returns:
         Tuned :class:`PIParameters`.
+
+    Raises:
+        ValueError: If dead time θ ≈ 0 (formula is singular).
     """
+    if model.theta < 1e-6:
+        raise ValueError(
+            "Cohen–Coon tuning requires θ > 0 s (formula contains 1/θ). "
+            f"Got θ = {model.theta} s — use lambda tuning for near-zero dead time."
+        )
     r = model.theta / model.tau_p
     K_c = (model.tau_p / (model.K_p * model.theta)) * (0.9 + r / 12.0)
     tau_I = model.theta * (30.0 + 3.0 * r) / (9.0 + 20.0 * r)
@@ -410,11 +435,18 @@ def closed_loop_response(
     Returns:
         Tuple ``(time, output, control_signal)``.
     """
+    if dt <= 0:
+        raise ValueError(f"dt must be positive [s], got {dt}.")
+
     n = int(t_end / dt) + 1
     time_vec = [i * dt for i in range(n)]
 
-    # Store delayed outputs for dead-time approximation (integer delay)
-    delay_steps = max(1, int(model.theta / dt))
+    # Store delayed outputs for dead-time approximation (integer delay).
+    # Round (rather than floor) to the nearest sample and allow zero
+    # delay when the process has no dead time — the previous max(1, ...)
+    # floor injected a spurious one-sample lag into pure first-order
+    # models, biasing the simulated response.
+    delay_steps = max(0, int(round(model.theta / dt)))
     u_history: list[float] = [0.0] * (delay_steps + n)
 
     y = 0.0
