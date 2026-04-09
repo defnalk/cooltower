@@ -210,10 +210,21 @@ def _interpolate_response_time(
     y0: float,
     target_delta: float,
 ) -> float:
-    """Find the time at which (y − y0) first reaches *target_delta* by linear interpolation."""
+    """Find the time at which (y − y0) first reaches *target_delta* by linear interpolation.
+
+    Works for both rising (positive step) and falling (negative step)
+    responses: the crossing is detected whenever *target_delta* lies
+    between two consecutive (y[i] − y0) samples, regardless of sign.
+    """
     for i in range(len(y) - 1):
-        if (y[i] - y0) <= target_delta <= (y[i + 1] - y0):
-            frac = (target_delta - (y[i] - y0)) / max(y[i + 1] - y[i], 1e-12)
+        d0 = y[i] - y0
+        d1 = y[i + 1] - y0
+        lo, hi = (d0, d1) if d0 <= d1 else (d1, d0)
+        if lo <= target_delta <= hi:
+            denom = d1 - d0
+            if abs(denom) < 1e-12:
+                return t[i]
+            frac = (target_delta - d0) / denom
             return t[i] + frac * (t[i + 1] - t[i])
     raise ValueError(
         f"Response does not reach the target level (Δy = {target_delta:.4f}) "
