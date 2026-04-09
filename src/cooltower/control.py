@@ -335,7 +335,15 @@ def tune_cohen_coon(model: FOPDTModel) -> PIParameters:
 
     Returns:
         Tuned :class:`PIParameters`.
+
+    Raises:
+        ValueError: If dead time θ ≈ 0 (formula is singular).
     """
+    if model.theta < 1e-6:
+        raise ValueError(
+            "Cohen–Coon tuning requires θ > 0 s (formula contains 1/θ). "
+            f"Got θ = {model.theta} s — use lambda tuning for near-zero dead time."
+        )
     r = model.theta / model.tau_p
     K_c = (model.tau_p / (model.K_p * model.theta)) * (0.9 + r / 12.0)
     tau_I = model.theta * (30.0 + 3.0 * r) / (9.0 + 20.0 * r)
