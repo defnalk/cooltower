@@ -317,6 +317,22 @@ def wet_bulb_temperature(
     """
     _validate_temperature(T_db, "T_db")
     _validate_pressure(P)
+    if omega < 0.0:
+        raise ValueError(
+            f"Humidity ratio cannot be negative, got ω = {omega} kg/kg."
+        )
+
+    # Feasibility: ω must not exceed saturation at T_db, otherwise the
+    # Newton iteration will wander outside the valid psychrometric region
+    # and eventually raise a generic non-convergence error.
+    omega_sat = humidity_ratio_from_rh(T_db, 1.0, P)
+    if omega > omega_sat * (1.0 + 1e-6):
+        raise ValueError(
+            f"Humidity ratio ω = {omega:.6f} kg/kg exceeds saturation "
+            f"ω_sat = {omega_sat:.6f} kg/kg at T_db = {T_db} °C, "
+            f"P = {P:.0f} Pa. The state is supersaturated; no wet-bulb "
+            "temperature exists."
+        )
 
     T_wb = T_db  # initial guess
     A = 6.6e-4
