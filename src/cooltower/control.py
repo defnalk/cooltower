@@ -435,11 +435,18 @@ def closed_loop_response(
     Returns:
         Tuple ``(time, output, control_signal)``.
     """
+    if dt <= 0:
+        raise ValueError(f"dt must be positive [s], got {dt}.")
+
     n = int(t_end / dt) + 1
     time_vec = [i * dt for i in range(n)]
 
-    # Store delayed outputs for dead-time approximation (integer delay)
-    delay_steps = max(1, int(model.theta / dt))
+    # Store delayed outputs for dead-time approximation (integer delay).
+    # Round (rather than floor) to the nearest sample and allow zero
+    # delay when the process has no dead time — the previous max(1, ...)
+    # floor injected a spurious one-sample lag into pure first-order
+    # models, biasing the simulated response.
+    delay_steps = max(0, int(round(model.theta / dt)))
     u_history: list[float] = [0.0] * (delay_steps + n)
 
     y = 0.0
