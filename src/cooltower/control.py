@@ -173,6 +173,12 @@ def identify_fopdt(
         tau_p = 1.5 * (t63 - t28)
         theta = t63 - tau_p - (post_step_t[0] - step_time)
     elif method == "tangent":
+        if len(post_step_t) < 2:
+            raise ValueError(
+                "tangent method requires at least 2 post-step samples to "
+                f"estimate a slope, got {len(post_step_t)}. Extend the "
+                "step test or use method='two_point'."
+            )
         # Find inflection point (max slope in post-step data)
         slopes = [
             (post_step_y[i + 1] - post_step_y[i]) / max(post_step_t[i + 1] - post_step_t[i], 1e-9)
