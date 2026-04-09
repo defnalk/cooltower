@@ -1,0 +1,28 @@
+# Reproducibility config for cooltower.
+# Run: python -m cooltower.cli --config config/default.yaml
+
+measurements:
+  air:
+    T_db_in_C: 24.5
+    T_wb_in_C: 18.0
+    T_db_out_C: 31.0
+    T_wb_out_C: 28.5
+  water:
+    T_hot_in_C: 39.5
+    T_cold_out_C: 27.5
+    m_in_kg_s: 0.48
+
+control:
+  fopdt:
+    K_p: 0.82
+    tau_p_s: 145.0
+    theta_s: 18.0
+  setpoint_step_C: 5.0
+  t_end_s: 1200.0
+  dt_s: 2.0
+
+output:
+  results_dir: results
+  metrics_name: metrics.json
+  figure_name: cooltower_results.png
+  random_seed: 0
