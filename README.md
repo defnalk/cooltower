@@ -6,19 +6,19 @@
 ![Coverage](https://img.shields.io/badge/coverage-90%25+-brightgreen)
 ![Version](https://img.shields.io/badge/version-0.1.0-orange)
 
-**A pvlib-inspired Python library for mechanical-draught cooling tower analysis.**
+**A pvlib inspired Python library for mechanical draught cooling tower analysis.**
 
-`cooltower` provides production-grade implementations of the psychrometric equations, steady-flow energy and mass balances, and PI controller tuning methods used in industrial cooling tower design and lab analysis. It covers the full pipeline from raw temperature measurements to engineered control parameters — with full type hints, Google-style docstrings, and 90 %+ test coverage.
+`cooltower` provides production grade implementations of the psychrometric equations, steady flow energy and mass balances, and PI controller tuning methods used in industrial cooling tower design and lab analysis. It covers the full pipeline from raw temperature measurements to engineered control parameters, with full type hints, Google style docstrings, and 90 %+ test coverage.
 
 ---
 
 ## Features
 
-- **Psychrometrics** — Saturation pressure (Buck 1981), humidity ratio from wet-bulb or relative humidity, specific enthalpy (Rogers & Mayhew datum), dew-point, degree of saturation, evaporation rate.
-- **Energy balances** — Steady-flow mass and energy balance with no shaft work; back-calculation of air mass-flow rate; approach and range temperatures; L/G ratio.
-- **Process control** — FOPDT model identification from step-test data (tangent and two-point methods); lambda (IMC), Ziegler–Nichols, and Cohen–Coon PI tuning; closed-loop step-response simulation (velocity form, no windup); ISE/IAE/ITAE performance indices.
-- **Zero dependencies** — Pure Python standard library only. `matplotlib` required only for plotting examples.
-- **Fully typed** — `py.typed` marker, strict mypy, all public APIs annotated.
+- **Psychrometrics**, Saturation pressure (Buck 1981), humidity ratio from wet bulb or relative humidity, specific enthalpy (Rogers & Mayhew datum), dew point, degree of saturation, evaporation rate.
+- **Energy balances**, Steady flow mass and energy balance with no shaft work; back calculation of air mass flow rate; approach and range temperatures; L/G ratio.
+- **Process control**, FOPDT model identification from step test data (tangent and two point methods); lambda (IMC), Ziegler/Nichols, and Cohen/Coon PI tuning; closed loop step response simulation (velocity form, no windup); ISE/IAE/ITAE performance indices.
+- **Zero dependencies**: Pure Python standard library only. `matplotlib` required only for plotting examples.
+- **Fully typed**: `py.typed` marker, strict mypy, all public APIs annotated.
 
 ---
 
@@ -34,7 +34,7 @@ cd cooltower
 make install
 ```
 
-**Requirements:** Python ≥ 3.10, no third-party runtime dependencies.
+**Requirements:** Python ≥ 3.10, no third party runtime dependencies.
 
 ---
 
@@ -103,7 +103,7 @@ print(pi_zn)
 t, y, u = closed_loop_response(model, pi, setpoint=5.0, t_end=1200.0, dt=2.0)
 ```
 
-### FOPDT identification from step-test data
+### FOPDT identification from step test data
 
 ```python
 from cooltower.control import identify_fopdt, tune_lambda
@@ -125,15 +125,15 @@ pi = tune_lambda(model)
 
 ## Why lambda tuning for cooling towers?
 
-| Property | Lambda (IMC) | Ziegler–Nichols | Cohen–Coon |
+| Property | Lambda (IMC) | Ziegler/Nichols | Cohen/Coon |
 |---|---|---|---|
 | Requires sustained oscillations | ✗ | ✓ | ✗ |
 | Suits slow dynamics | ✓ | ✗ | — |
-| Robust to flow-rate noise | ✓ | ✗ | — |
-| Needs long dead-time fraction | ✗ | ✗ | ✓ |
-| Closed-loop time constant tunable | ✓ | ✗ | ✗ |
+| Robust to flow rate noise | ✓ | ✗ | — |
+| Needs long dead time fraction | ✗ | ✗ | ✓ |
+| Closed loop time constant tunable | ✓ | ✗ | ✗ |
 
-Cooling tower outlet temperature has **slow dynamics** (τ_p ≈ 120–300 s) and the manipulated variable (water or fan flow) is **noisy**. Lambda tuning lets you choose the aggressiveness via the closed-loop time constant λ, without destructive oscillation tests.
+Cooling tower outlet temperature has **slow dynamics** (τ_p ≈ 120/300 s) and the manipulated variable (water or fan flow) is **noisy**. Lambda tuning lets you choose the aggressiveness via the closed loop time constant λ, without destructive oscillation tests.
 
 ---
 
@@ -143,13 +143,13 @@ Cooling tower outlet temperature has **slow dynamics** (τ_p ≈ 120–300 s) an
 
 | Function | Description |
 |---|---|
-| `saturation_pressure(T_db)` | Saturation vapour pressure [Pa] — Buck (1981) |
+| `saturation_pressure(T_db)` | Saturation vapour pressure [Pa], Buck (1981) |
 | `humidity_ratio_from_rh(T_db, rh, P)` | ω from relative humidity |
-| `humidity_ratio(T_db, T_wb, P)` | ω from wet-bulb (Sprung formula) |
-| `specific_enthalpy(T_db, omega)` | Moist-air enthalpy [J/kg_da] |
+| `humidity_ratio(T_db, T_wb, P)` | ω from wet bulb (Sprung formula) |
+| `specific_enthalpy(T_db, omega)` | Moist air enthalpy [J/kg_da] |
 | `relative_humidity(T_db, omega, P)` | φ from ω |
-| `dew_point_temperature(omega, P)` | T_dp [°C] — Magnus inversion |
-| `wet_bulb_temperature(T_db, omega, P)` | T_wb [°C] — iterative |
+| `dew_point_temperature(omega, P)` | T_dp [°C], Magnus inversion |
+| `wet_bulb_temperature(T_db, omega, P)` | T_wb [°C], iterative |
 | `degree_of_saturation(T_db, omega, P)` | μ = ω / ω_sat |
 | `evaporation_rate(omega_out, omega_in, m_air)` | ṁ_evap [kg/s] |
 
@@ -159,9 +159,9 @@ Cooling tower outlet temperature has **slow dynamics** (τ_p ≈ 120–300 s) an
 |---|---|
 | `CoolingTowerState` | Dataclass: temperatures, flow rates, derived ω, h |
 | `EnergyBalanceResult` | Frozen dataclass: Q_air, Q_water, ṁ_evap, imbalance |
-| `solve_energy_balance(inlet, outlet)` | Full steady-flow energy & mass balance |
-| `solve_air_flow_rate(...)` | Back-calculate ṁₐ from measured temperatures |
-| `cooling_duty(m_water, T_in, T_out)` | Approximate water-side heat rejection [W] |
+| `solve_energy_balance(inlet, outlet)` | Full steady flow energy & mass balance |
+| `solve_air_flow_rate(...)` | Back calculate ṁₐ from measured temperatures |
+| `cooling_duty(m_water, T_in, T_out)` | Approximate water side heat rejection [W] |
 | `approach_temperature(T_water_out, T_wb_in)` | Approach [°C] |
 | `range_temperature(T_water_in, T_water_out)` | Range [°C] |
 | `liquid_to_gas_ratio(m_water, m_air)` | L/G ratio |
@@ -172,12 +172,12 @@ Cooling tower outlet temperature has **slow dynamics** (τ_p ≈ 120–300 s) an
 |---|---|
 | `FOPDTModel` | Frozen dataclass: K_p, τ_p, θ |
 | `PIParameters` | Frozen dataclass: K_c, τ_I, method; `.K_i` property |
-| `identify_fopdt(time, output, ...)` | FOPDT identification (tangent / two-point) |
+| `identify_fopdt(time, output, ...)` | FOPDT identification (tangent / two point) |
 | `tune_lambda(model, lambda_)` | IMC / lambda PI tuning |
-| `tune_ziegler_nichols(model)` | ZN open-loop PI tuning |
-| `tune_cohen_coon(model)` | Cohen–Coon PI tuning |
-| `step_response(model, t_end, dt)` | Open-loop step simulation |
-| `closed_loop_response(model, pi, setpoint, ...)` | Velocity-form PI closed-loop sim |
+| `tune_ziegler_nichols(model)` | ZN open loop PI tuning |
+| `tune_cohen_coon(model)` | Cohen/Coon PI tuning |
+| `step_response(model, t_end, dt)` | Open loop step simulation |
+| `closed_loop_response(model, pi, setpoint, ...)` | Velocity form PI closed loop sim |
 | `performance_indices(time, error)` | ISE, IAE, ITAE |
 
 ---
@@ -209,8 +209,8 @@ python examples/basic_analysis.py
 See [CONTRIBUTING.md](CONTRIBUTING.md). In brief:
 
 1. Fork the repository and create a branch: `git checkout -b feat/your-feature`
-2. Write code with full type hints and Google-style docstrings.
-3. Add tests — maintain ≥ 90 % coverage.
+2. Write code with full type hints and Google style docstrings.
+3. Add tests, maintain ≥ 90 % coverage.
 4. Run `make check` (lint + format + typecheck) before pushing.
 5. Open a pull request against `main`.
 
@@ -218,13 +218,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). In brief:
 
 ## Background & References
 
-- Rogers, G. F. C. & Mayhew, Y. R. — *Engineering Thermodynamics: Work and Heat Transfer*, 4th ed.
-- ASHRAE — *Fundamentals Handbook*, Chapter 1 (Psychrometrics), 2021.
-- Seborg, D. E., Edgar, T. F., Mellichamp, D. A. & Doyle, F. J. — *Process Dynamics and Control*, 4th ed., Chapters 11–12.
-- Buck, A. L. (1981). "New equations for computing vapour pressure and enhancement factor." *Journal of Applied Meteorology*, 20, 1527–1532.
+- Rogers, G. F. C. & Mayhew, Y. R., *Engineering Thermodynamics: Work and Heat Transfer*, 4th ed.
+- ASHRAE, *Fundamentals Handbook*, Chapter 1 (Psychrometrics), 2021.
+- Seborg, D. E., Edgar, T. F., Mellichamp, D. A. & Doyle, F. J., *Process Dynamics and Control*, 4th ed., Chapters 11/12.
+- Buck, A. L. (1981). "New equations for computing vapour pressure and enhancement factor." *Journal of Applied Meteorology*, 20, 1527/1532.
 
 ---
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT: see [LICENSE](LICENSE).
