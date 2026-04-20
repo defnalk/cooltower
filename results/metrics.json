@@ -1,0 +1,30 @@
+{
+  "config": "config/default.yaml",
+  "psychrometrics": {
+    "omega_in_g_kg": 10.163800214389553,
+    "omega_out_g_kg": 23.742371736826417,
+    "h_in_kJ_kg": 50.516132991169115,
+    "h_out_kJ_kg": 91.89417612433698,
+    "rh_in": 0.52977601350517
+  },
+  "energy_balance": {
+    "m_air_kg_s": 0.5614978963945737,
+    "Q_air_kW": 23.233684176197695,
+    "Q_water_kW": 24.98903582380231,
+    "m_evap_kg_hr": 27.447621645209626,
+    "imbalance_W": 1755.351647604617
+  },
+  "performance": {
+    "range_C": 12.0,
+    "approach_C": 9.5,
+    "L_over_G": 0.8548562747645562
+  },
+  "control": {
+    "lambda": "PI(lambda): K_c=1.9539,  \u03c4_I=145.00 s  (K_I=0.0135)",
+    "ziegler_nichols": "PI(ziegler_nichols): K_c=8.8415,  \u03c4_I=59.94 s  (K_I=0.1475)",
+    "ISE": 1312.5722562479555,
+    "IAE": 437.49269702626566,
+    "ITAE": 31911.403796627314,
+    "y_final": 4.9999507126997065
+  }
+}

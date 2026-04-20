@@ -194,6 +194,26 @@ Coverage is enforced at ≥ 90 % by `pytest-cov`. The CI matrix runs on Python 3
 
 ---
 
+## Reproduce the Published Result (one command)
+
+All key parameters live in [`config/default.yaml`](config/default.yaml). To
+reproduce the metrics and figure in [`results/`](results/) from a fresh clone:
+
+```bash
+git clone https://github.com/defnalk/cooltower.git
+cd cooltower
+pip install -e .
+python -m cooltower.cli --config config/default.yaml
+```
+
+Outputs:
+
+- `results/metrics.json` — psychrometric properties, energy balance, performance, control tuning
+- `results/cooltower_results.png` — closed-loop response figure
+
+To explore variations, copy `config/default.yaml`, edit any measurement or
+FOPDT parameter, and pass the new file via `--config`.
+
 ## Running the Example
 
 ```bash
